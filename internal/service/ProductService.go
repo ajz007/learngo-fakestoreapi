@@ -13,23 +13,17 @@ type ProductServiceImpl struct {
 	fakestoreClient client.FakeStoreClient
 }
 
-func NewProductService() ProductService {
+func NewProductService(client client.FakeStoreClient) ProductService {
 	return ProductServiceImpl{
-		fakestoreClient: client.NewFakeStoreClient(),
+		fakestoreClient: client,
 	}
 }
 
 func (ps ProductServiceImpl) GetProducts() ([]model.Product, error) {
-	productsDto, err := ps.fakestoreClient.GetProducts()
+	products, err := ps.fakestoreClient.GetProducts()
 
 	if err != nil {
 		return nil, err
-	}
-
-	var products []model.Product
-
-	for _, productDto := range productsDto {
-		products = append(products, productDto.ToProduct())
 	}
 
 	return products, nil

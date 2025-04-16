@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 
+	"github.com/ajz007/learngo-fakestoreapi/internal/client"
 	"github.com/ajz007/learngo-fakestoreapi/internal/handler"
+	"github.com/ajz007/learngo-fakestoreapi/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +24,7 @@ import (
 */
 func main() {
 	router := gin.Default()
+
 	router.GET("/health", func(c *gin.Context) {
 		//“Set the HTTP response code to 200, and write this JSON object as the response body.”
 		// gin.H is --> type H map[string]interface{} which basically means a map with key as string and value as object of any type
@@ -40,7 +43,15 @@ func main() {
 		})
 	})
 
-	router.GET("/products", handler.NewProductHandler().GetProducts)
+	/*
+		Creating all the dependencies here for injecting (DI)
+	*/
+
+	client := client.NewFakeStoreClient()
+	service := service.NewProductService(client)
+	handlerobj := handler.NewProductHandler(service)
+
+	router.GET("/products", handlerobj.GetProducts)
 
 	log.Println("Starting the server on : 8080...")
 

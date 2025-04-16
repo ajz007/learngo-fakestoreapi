@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/ajz007/learngo-fakestoreapi/internal/model"
 )
 
 type FakeStoreClient interface {
-	GetProducts() ([]FakeStoreProductDTO, error)
+	GetProducts() ([]model.Product, error)
 }
 
 type fakeStoreClientImpl struct {
@@ -29,22 +31,28 @@ func NewFakeStoreClient() FakeStoreClient {
 	}
 }
 
-func (fc *fakeStoreClientImpl) GetProducts() ([]FakeStoreProductDTO, error) {
+func (fc *fakeStoreClientImpl) GetProducts() ([]model.Product, error) {
 	resp, err := fc.client.Get(fmt.Sprintf(fc.baseUrl + "/products")) //TODO: check if contatenation is ok in golang
-
-	defer resp.Body.Close()
 
 	if err != nil {
 		return nil, err
 	}
 
+	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New("failed to fetch products from fakestoreapi")
 	}
 
-	var products []FakeStoreProductDTO
-	if err := json.NewDecoder(resp.Body).Decode(&products); err != nil {
+	var productsDTO []FakeStoreProductDTO
+	if err := json.NewDecoder(resp.Body).Decode(&productsDTO); err != nil {
 		return nil, err
+	}
+
+	var products []model.Product
+
+	for _, productDto := range productsDTO {
+		products = append(products, productDto.ToProduct())
 	}
 
 	return products, nil

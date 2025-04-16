@@ -82,6 +82,10 @@ require github.com/gin-gonic/gin v1.10.0
 ## Phase 2: Service layer
 
 We would follow the clean architecture: handler → service → client
+#### Objectives
+ - Have clear separation of concerns. (Dont pass *gin.Context beyond handler layer)
+ - Align with SOLID design principles
+ - Maintainable and testable using DI from main
 
 🧱 Step-by-Step Plan
 ✅ Step 2.1: Define the domain model (Product)

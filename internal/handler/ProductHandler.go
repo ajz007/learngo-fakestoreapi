@@ -15,9 +15,9 @@ type ProductHandlerImpl struct {
 	prodService service.ProductService
 }
 
-func NewProductHandler() ProductHandler {
+func NewProductHandler(service service.ProductService) ProductHandler {
 	return &ProductHandlerImpl{
-		prodService: service.NewProductService(),
+		prodService: service,
 	}
 }
 
